@@ -39,7 +39,7 @@ describe "Events" do
     @event = Event.where(:title=> 'March Event').first
     visit volunteer_path(@event)
     page.should have_content("Thanks for volunteering")
-    @rsvp = VolunteerRsvp.where(:event_id=> @event_id, :user_id => @user.id).first
+    @rsvp = VolunteerRsvpRole.where(:event_id=> @event_id, :user_id => @user.id).first
 #    @rsvp.should_not equal(nil)
     
   end
@@ -58,7 +58,7 @@ describe "Events" do
     @event.date = DateTime.now
     @event.save!
     
-    @rsvp = VolunteerRsvp.new
+    @rsvp = VolunteerRsvpRole.new
     @rsvp.user_id = @user1.id
     @rsvp.event_id = @event.id
     @rsvp.attending = true

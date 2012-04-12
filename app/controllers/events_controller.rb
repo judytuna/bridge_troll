@@ -14,7 +14,7 @@ class EventsController < ApplicationController
   # GET /events/1.json
   def show
     @event = Event.find(params[:id])
-    @volunteers = VolunteerRsvp.where(:event_id => params[:id], :attending => true)
+    @volunteers = VolunteerRsvpRole.where(:event_id => params[:id], :attending => true)
     @teachers = []
     @tas = []
     
@@ -103,7 +103,7 @@ class EventsController < ApplicationController
     redirect_to "/events" and return if !user_signed_in?
 
     opts = {:event_id => params[:id], :user_id => current_user.id}
-    @rsvp = VolunteerRsvp.where(opts).first || VolunteerRsvp.new(opts)
+    @rsvp = VolunteerRsvpRole.where(opts).first || VolunteerRsvpRole.new(opts)
     @rsvp.attending = true
 
     if @rsvp.save
@@ -114,7 +114,7 @@ class EventsController < ApplicationController
   end
 
   def unvolunteer
-    @rsvp = VolunteerRsvp.where(:event_id => params[:id], :user_id => current_user).first
+    @rsvp = VolunteerRsvpRole.where(:event_id => params[:id], :user_id => current_user).first
     @events = Event.all
     respond_to do |format|
       if not @rsvp.nil? and @rsvp.update_attribute(:attending, false)

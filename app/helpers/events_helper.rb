@@ -1,7 +1,7 @@
 module EventsHelper
   def check_volunteer_status (event_id)
 #    debugger
-    @rsvp = VolunteerRsvp.where(:user_id => current_user, :event_id => event_id).first
+    @rsvp = VolunteerRsvpRole.where(:user_id => current_user, :event_id => event_id).first
 #    debugger
     if @rsvp.nil?
       return true

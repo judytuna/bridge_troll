@@ -11,7 +11,7 @@ describe EventsController do
         @user = Factory(:user)
         sign_in @user
 
-        @rsvp = VolunteerRsvp.create(:user_id => @user.id, :event_id => @event.id, :attending => false)
+        @rsvp = VolunteerRsvpRole.create(:user_id => @user.id, :event_id => @event.id, :attending => false)
       end
 
       it "changes the attending attribute on the rsvp to true" do
@@ -43,7 +43,7 @@ describe EventsController do
       it "does not create any new rsvps" do
         expect {
           get :volunteer, {:id => @event.id}
-        }.to_not change { VolunteerRsvp.count }
+        }.to_not change { VolunteerRsvpRole.count }
       end
     end
   end

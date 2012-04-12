@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120412025036) do
+ActiveRecord::Schema.define(:version => 20120412031417) do
 
   create_table "events", :force => true do |t|
     t.string   "title"
@@ -75,7 +75,7 @@ ActiveRecord::Schema.define(:version => 20120412025036) do
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["unlock_token"], :name => "index_users_on_unlock_token", :unique => true
 
-  create_table "volunteer_rsvps", :force => true do |t|
+  create_table "volunteer_rsvp_roles", :force => true do |t|
     t.integer  "user_id"
     t.integer  "event_id"
     t.boolean  "attending"
