@@ -12,4 +12,8 @@ class Event < ActiveRecord::Base
   def unvolunteer!(user)
     VolunteerRsvpRole.where(:event_id => self.id, :user_id => user.id).first.update_attributes!(:attending => false)
   end
+  
+  def volunteering?(user)
+    VolunteerRsvpRole.where(:event_id => self.id, :user_id => user.id, :attending => true).present? 
+  end
 end
