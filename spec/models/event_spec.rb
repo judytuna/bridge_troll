@@ -6,45 +6,32 @@ describe Event do
       @event = Factory(:event)
     end
 
-    context "there is already a rsvp for the volunteer/event" do
-      before do
-        @user = Factory(:user)
-        sign_in @user
-
-        @rsvp = VolunteerRsvpRole.create!(:user_id => @user.id, :event_id => @event.id, :attending => false)
-      end
-
-      it "changes the attending attribute on the rsvp to true" do
-        get :volunteer, {:id => @event.id}
-        @rsvp.reload.attending.should == true
-      end
-
-      it "does not create a new rsvp"
-      it "redirects to the event page related to the rsvp"
-
-      it "flashes a confirmation" do
-        get :volunteer, {:id => @event.id}
-        flash[:notice].should match(/volunteer/i)
-      end
+    it "should have a volunteer! method" do
+      @event.should respond_to(:volunteer!)
     end
-
-    context "there is no rsvp for the volunteer/event" do
-      it "creates a new rsvp, with the the right attributes"
-      it "redirects to the event page related to the rsvp"
-      it "flashes a confirmation"
+    
+    it "should not create duplicate volunteer_rsvp_roles" do
+      @user = Factory(:user)
+      @event.volunteer!(@user)
+      
+      duplicate_volunteer_rsvp = VolunteerRsvpRole.new(:user_id => @user.id, :event_id => @event.id, :attending => true)
+      duplicate_volunteer_rsvp.should_not be_valid
+       
     end
-
-    context "without logging in, I am redirected from the page" do
-      it "redirects to the events page" do
-        get :volunteer, {:id => @event.id}
-        response.should redirect_to("/events")
-      end
-
-      it "does not create any new rsvps" do
-        expect {
-          get :volunteer, {:id => @event.id}
-        }.to_not change { VolunteerRsvpRole.count }
-      end
+    
+    it "should create a volunteer_rsvp_role" do
+      @user = Factory(:user)
+      lambda {        
+      @event.volunteer!(@user)
+      }.should change(VolunteerRsvpRole, :count).by(1)
     end
+     
+    it "should give the new volunteer_rsvp_role with correct attributes" do
+      @user = Factory(:user)
+      @volunteer_rsvp_role = @event.volunteer!(@user)
+      @volunteer_rsvp_role.user_id.should == @user.id
+      @volunteer_rsvp_role.event_id.should == @event.id
+      @volunteer_rsvp_role.attending.should == true
+    end    
   end
 end
