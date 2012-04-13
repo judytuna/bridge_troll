@@ -9,10 +9,7 @@ class Event < ActiveRecord::Base
     VolunteerRsvpRole.create!(:user_id => user.id, :event_id => self.id, :attending => true)
   end
 
-#  def unvolunteer!(user)
-#    VolunteerRsvpRole.create!(:user_id => user.id, :event_id => self.id, :attending => true)
-#  end
-#  def unfollow!(followed)
-#    relationships.find_by_followed_id(followed).destroy
-#  end
+  def unvolunteer!(user)
+    VolunteerRsvpRole.where(:event_id => self.id, :user_id => user.id).first.update_attributes!(:attending => false)
+  end
 end

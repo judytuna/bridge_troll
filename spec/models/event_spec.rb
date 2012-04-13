@@ -39,16 +39,30 @@ describe Event do
      
     it "should give the new volunteer_rsvp_role with correct attributes" do
       @user = Factory(:user)
-      @volunteer_rsvp_role = @event.volunteer!(@user)
-      @volunteer_rsvp_role.user_id.should == @user.id
-      @volunteer_rsvp_role.event_id.should == @event.id
-      @volunteer_rsvp_role.attending.should == true
+      @rsvp = @event.volunteer!(@user)
+      @rsvp.user_id.should == @user.id
+      @rsvp.event_id.should == @event.id
+      @rsvp.attending.should == true
     end    
   end
   
-#  describe "unvolunteer" do
-#      it "should have an unvolunteer! method" do
-#      @event.should respond_to(:unvolunteer!)
-#      end
-#  end
+  describe "unvolunteer" do
+    before do
+      @event = Factory(:event)
+    end
+    
+    it "should have an unvolunteer! method" do
+      @event.should respond_to(:unvolunteer!)
+    end
+    
+    it "should change the attending attribute to false" do
+      @user = Factory(:user)
+      @rsvp = @event.volunteer!(@user)
+      @rsvp.attending.should == true
+      
+      @event.unvolunteer!(@user)
+      changedStatus = @event.volunteerRsvpRoles.find_by_user_id(@user.id).attending 
+      changedStatus.should ==false 
+    end
+  end
 end
