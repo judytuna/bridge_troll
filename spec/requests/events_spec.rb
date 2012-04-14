@@ -37,9 +37,9 @@ describe "Events" do
     page.should have_content("March Event")
     page.should have_button("Volunteer")
     @event = Event.where(:title=> 'March Event').first
-#    visit volunteer_path(@event)
-#    page.should have_content("Thanks for volunteering")
-#    @rsvp = VolunteerRsvpRole.where(:event_id=> @event_id, :user_id => @user.id).first
+    visit volunteer_path(@event)
+    page.should have_content("Thanks for volunteering")
+    @rsvp = VolunteerRsvpRole.where(:event_id=> @event_id, :user_id => @user.id).first
      
   end
   

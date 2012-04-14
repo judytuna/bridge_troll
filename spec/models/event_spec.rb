@@ -18,12 +18,12 @@ describe Event do
       @user = Factory(:user)
     end
 
-    it "should have a volunteer! method" do
-      @event.should respond_to(:volunteer!)
+    it "should have a volunteer method" do
+      @event.should respond_to(:volunteer)
     end
     
     it "should not create duplicate volunteer_rsvp_roles" do
-      @event.volunteer!(@user)
+      @event.volunteer(@user)
 
       duplicate_volunteer_rsvp_role = VolunteerRsvpRole.new(:user_id => @user.id, :event_id => @event.id, :attending => true)
       duplicate_volunteer_rsvp_role.should_not be_valid
@@ -32,12 +32,12 @@ describe Event do
     
     it "should create a volunteer_rsvp_role" do
       lambda {        
-      @event.volunteer!(@user)
+      @event.volunteer(@user)
       }.should change(VolunteerRsvpRole, :count).by(1)
     end
      
     it "should give the new volunteer_rsvp_role with correct attributes" do
-      @rsvp = @event.volunteer!(@user)
+      @rsvp = @event.volunteer(@user)
       @rsvp.user_id.should == @user.id
       @rsvp.event_id.should == @event.id
       @rsvp.attending.should == true
@@ -50,15 +50,15 @@ describe Event do
       @user = Factory(:user)
     end
     
-    it "should have an unvolunteer! method" do
-      @event.should respond_to(:unvolunteer!)
+    it "should have an unvolunteer method" do
+      @event.should respond_to(:unvolunteer)
     end
     
     it "should change the attending attribute to false" do
-      @rsvp = @event.volunteer!(@user)
+      @rsvp = @event.volunteer(@user)
       @rsvp.attending.should == true
       
-      @event.unvolunteer!(@user)
+      @event.unvolunteer(@user)
       changedStatus = @event.volunteerRsvpRoles.find_by_user_id(@user.id).attending 
       changedStatus.should == false 
     end
@@ -75,7 +75,7 @@ describe Event do
     end
     
     it "should be true when a user is volunteering at an event" do
-      @event.volunteer!(@user)
+      @event.volunteer(@user)
       @event.volunteering?(@user).should == true        
     end
     

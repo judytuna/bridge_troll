@@ -70,7 +70,20 @@ class EventsController < ApplicationController
       end
     end
   end
-
+  
+  def volunteer
+     redirect_to "/events" and return if !user_signed_in?
+     
+     @event = Event.find(params[:id])
+     @rsvp = @event.volunteer(current_user)
+      
+     if @rsvp.persisted?
+       redirect_to events_path, notice: 'Thanks for volunteering!'
+     else
+       redirect_to events_path, notice: 'You are already registered to volunteer for the event!'
+     end
+  end
+  
   # PUT /events/1
   # PUT /events/1.json
   def update
