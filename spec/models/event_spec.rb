@@ -1,50 +1,87 @@
 require 'spec_helper'
 
-describe Event do 
-  describe "volunteer" do
+describe Event do
+
+  describe "volunteer rsvps role" do
     before do
       @event = Factory(:event)
     end
-
-    context "there is already a rsvp for the volunteer/event" do
-      before do
-        @user = Factory(:user)
-        sign_in @user
-
-        @rsvp = VolunteerRsvpRole.create!(:user_id => @user.id, :event_id => @event.id, :attending => false)
-      end
-
-      it "changes the attending attribute on the rsvp to true" do
-        get :volunteer, {:id => @event.id}
-        @rsvp.reload.attending.should == true
-      end
-
-      it "does not create a new rsvp"
-      it "redirects to the event page related to the rsvp"
-
-      it "flashes a confirmation" do
-        get :volunteer, {:id => @event.id}
-        flash[:notice].should match(/volunteer/i)
-      end
+    
+    it "should have a volunteer_rsvp_role method" do
+      @event.should respond_to(:volunteerRsvpRoles)
+    end   
+  end
+   
+  describe "volunteer" do
+    before do
+      @event = Factory(:event)
+      @user = Factory(:user)
     end
 
-    context "there is no rsvp for the volunteer/event" do
-      it "creates a new rsvp, with the the right attributes"
-      it "redirects to the event page related to the rsvp"
-      it "flashes a confirmation"
+    it "should have a volunteer method" do
+      @event.should respond_to(:volunteer)
     end
+    
+    it "should not create duplicate volunteer_rsvp_roles" do
+      @event.volunteer(@user)
 
-    context "without logging in, I am redirected from the page" do
-      it "redirects to the events page" do
-        get :volunteer, {:id => @event.id}
-        response.should redirect_to("/events")
-      end
-
-      it "does not create any new rsvps" do
-        expect {
-          get :volunteer, {:id => @event.id}
-        }.to_not change { VolunteerRsvpRole.count }
-      end
+      duplicate_volunteer_rsvp_role = VolunteerRsvpRole.new(:user_id => @user.id, :event_id => @event.id, :attending => true)
+      duplicate_volunteer_rsvp_role.should_not be_valid
+       
     end
+    
+    it "should create a volunteer_rsvp_role" do
+      lambda {        
+      @event.volunteer(@user)
+      }.should change(VolunteerRsvpRole, :count).by(1)
+    end
+     
+    it "should give the new volunteer_rsvp_role with correct attributes" do
+      @rsvp = @event.volunteer(@user)
+      @rsvp.user_id.should == @user.id
+      @rsvp.event_id.should == @event.id
+      @rsvp.attending.should == true
+    end    
+  end
+  
+  describe "unvolunteer" do
+    before do
+      @event = Factory(:event)
+      @user = Factory(:user)
+    end
+    
+    it "should have an unvolunteer method" do
+      @event.should respond_to(:unvolunteer)
+    end
+    
+    it "should change the attending attribute to false" do
+      @rsvp = @event.volunteer(@user)
+      @rsvp.attending.should == true
+      
+      @event.unvolunteer(@user)
+      changedStatus = @event.volunteerRsvpRoles.find_by_user_id(@user.id).attending 
+      changedStatus.should == false 
+    end
+  end
+  
+  describe "volunteering?" do
+    before do
+      @event = Factory(:event)
+      @user = Factory(:user)
+    end
+    
+    it "should have a volunteering? method" do
+       @event.should respond_to(:volunteering?)
+    end
+    
+    it "should be true when a user is volunteering at an event" do
+      @event.volunteer(@user)
+      @event.volunteering?(@user).should == true
+    end
+    
+    it "should be false when a user is not volunteering at an event" do
+      @event.volunteering?(@user).should == false        
+    end
+    
   end
 end
