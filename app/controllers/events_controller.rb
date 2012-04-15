@@ -78,12 +78,24 @@ class EventsController < ApplicationController
      @rsvp = @event.volunteer(current_user)
       
      if @rsvp.persisted?
-       redirect_to events_path, notice: 'Thanks for volunteering!'
-     else
-       redirect_to events_path, notice: 'You are already registered to volunteer for the event!'
+       redirect_to @event, notice: 'Thanks for volunteering!'
      end
   end
   
+  def unvolunteer
+    redirect_to "/events" and return if !user_signed_in?
+    
+    @event = Event.find(params[:id])
+    @rsvp_updated = @event.unvolunteer(current_user)
+    respond_to do |format|
+      if @rsvp_updated == true
+        format.html { redirect_to events_path, notice: 'Sorry to hear you can not volunteer. We hope you can make it to our next event!' }
+        #redirect_to events
+      else
+        format.html { redirect_to events_path, notice: 'You are not signed up to volunteer for this event' }
+      end
+    end
+  end
   # PUT /events/1
   # PUT /events/1.json
   def update

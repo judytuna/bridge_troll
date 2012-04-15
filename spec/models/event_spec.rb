@@ -71,12 +71,12 @@ describe Event do
     end
     
     it "should have a volunteering? method" do
-      @event.should respond_to(:volunteering?)
+       @event.should respond_to(:volunteering?)
     end
     
     it "should be true when a user is volunteering at an event" do
       @event.volunteer(@user)
-      @event.volunteering?(@user).should == true        
+      @event.volunteering?(@user).should == true
     end
     
     it "should be false when a user is not volunteering at an event" do

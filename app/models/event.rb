@@ -13,9 +13,14 @@ class Event < ActiveRecord::Base
     @rsvp
   end
 
-  def unvolunteer(user)
-    @attr = {:event_id => self.id, :user_id => user.id}
-    VolunteerRsvpRole.where(@attr).first.update_attributes!(:attending => false)
+  def unvolunteer(user) 
+    @rsvp = VolunteerRsvpRole.find_by_event_id_and_user_id(self.id, user.id)
+    
+    if not @rsvp==nil and @rsvp.valid? 
+      @rsvp.update_attributes(:attending => false)
+    end
+    @rsvp
+    
   end
   
   def volunteering?(user)
